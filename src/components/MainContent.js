@@ -4,6 +4,7 @@ import './MainContent.less';
 
 import { Layout, Popover, Button } from 'antd';
 import { MenuFoldOutlined, ArrowRightOutlined, CloseOutlined } from '@ant-design/icons';
+import jsonToGo from "../plugin/json-to-go";
 const { Content } = Layout;
 
 const MainContent = ({toolChain, cancel}) => {
@@ -19,12 +20,19 @@ const MainContent = ({toolChain, cancel}) => {
             if (old){
                 node.value = old.value
             }
-
             node.do = t.do
             if (index > 0){
-                node.value = node.do.call(node, chainNodes[index - 1].value)
+                try {
+                    let input = chainNodes[index - 1].value
+                    if (typeof input != "string") {
+                        input = JSON.stringify(input)
+                    }
+                    node.value = node.do.call(node, input)
+                } catch (e) {
+                    node.value = "转化异常：" + e.toString()
+                }
+
             }
-            console.log(node)
             return node
         }))
     }, [toolChain]);
@@ -62,8 +70,18 @@ const MainContent = ({toolChain, cancel}) => {
         newChain[index] = {...newChain[index], value: v}
         for (let i = index + 1; i < newChain.length; i++) {
             const elem = newChain[i]
+            let value = ""
+            try {
+                let input = newChain[i - 1].value
+                if (typeof input != "string") {
+                    input = JSON.stringify(input)
+                }
+                value = elem.do.call(elem, input)
+            } catch (e) {
+                value = "转化异常：" + e.toString()
+            }
             newChain[i] = {
-                ...elem, value: elem.do.call(elem, newChain[i - 1].value)
+                ...elem, value: value
             }
         }
         setChainNodes(newChain)
