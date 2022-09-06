@@ -23,7 +23,7 @@ const ContentView = ({tool, onChange}) => {
     if (tool.type === "json"){
         return <ReactJson src={tool.value}
                           key = {tool.code}
-                          theme="monokai" style={{ height: winHeight }}/>
+                          theme="monokai" style={{ height: winHeight, overflow: "auto" }}/>
     }
     return view
 };
