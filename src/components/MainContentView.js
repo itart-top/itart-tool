@@ -3,12 +3,10 @@ import ReactJson from 'react-json-view'
 import { Input } from 'antd';
 const { TextArea } = Input;
 
-
-
 const ContentView = ({tool, onChange}) => {
     const [winHeight, setWinHeight] = useState(100);
     const resizeHandler = () =>  {
-        setWinHeight(window.innerHeight -130)
+        setWinHeight(window.innerHeight -150)
     }
     useEffect(() => {
         resizeHandler()

@@ -3,13 +3,14 @@ import MainContentView from "./MainContentView";
 import './MainContent.less';
 
 import { Layout, Popover, Button } from 'antd';
-import { MenuFoldOutlined, ArrowRightOutlined, CloseOutlined } from '@ant-design/icons';
-import jsonToGo from "../plugin/json-to-go";
+import { MenuFoldOutlined, ArrowRightOutlined, CloseOutlined, MenuUnfoldOutlined } from '@ant-design/icons';
 const { Content } = Layout;
 
-const MainContent = ({toolChain, cancel}) => {
+const MainContent = ({toolChain, cancel, folded}) => {
     const [current, setCurrent] = useState(0);
     const [chainNodes, setChainNodes] = useState([]);
+    const [isFolded, setIsFolded] = useState(false);
+    const [activeBox, setActiveBox] = useState({ "width": 0, "offset": 0})
 
     useEffect(() => {
         setCurrent(toolChain.length -1 )
@@ -37,21 +38,33 @@ const MainContent = ({toolChain, cancel}) => {
         }))
     }, [toolChain]);
 
+    useEffect(() => {
+        if (current === 0){
+            setActiveBox({ "width": 0, "offset": 0})
+            return
+        }
+        const activeEle = document.getElementById('breadcrumb-item-active');
+        if (activeEle){
+            setActiveBox({ "width": activeEle.offsetWidth, "offset": activeEle.offsetLeft})
+        }
+    }, [current]);
+
     const breadcrumb = chainNodes.map((t, index) => {
         const tag = <Button type="text" size={"small"}
                             disabled={current === index}
                             onClick={e => {
                                 setCurrent(chainNodes.findIndex(item => item.code === t.code))
                             }}>
-            {t.name}
+            {t.name} {t.dirty ? <span style={{color: "red"}}>*</span>:""}
         </Button>
-
+        const id = current === index ? "breadcrumb-item-active" : "";
+        const itemClassName = current === index ? "breadcrumb-item breadcrumb-item-active" : "breadcrumb-item"
         if (index === 0) {
-            return <span className="breadcrumb-item" key={t.code}>
+            return <span id={id} className={itemClassName} key={t.code}>
                 {tag}
             </span>
         }
-        return <span className="breadcrumb-item" key={t.code}>
+        return <span id={id} className={itemClassName} key={t.code}>
             {/*<Popover placement="bottomLeft" title="Title">
                 {tag}
             </Popover>*/}
@@ -65,11 +78,13 @@ const MainContent = ({toolChain, cancel}) => {
     }, null)
 
     const onChange = (tool, v) => {
+        tool.dirty = true
         const newChain = [...chainNodes]
         const index = newChain.findIndex(n => n.code === tool.code)
         newChain[index] = {...newChain[index], value: v}
         for (let i = index + 1; i < newChain.length; i++) {
             const elem = newChain[i]
+            elem.dirty = false
             let value = ""
             try {
                 let input = newChain[i - 1].value
@@ -86,20 +101,30 @@ const MainContent = ({toolChain, cancel}) => {
         }
         setChainNodes(newChain)
     }
+    const onFolded = () => {
+        setIsFolded(!isFolded)
+        folded(!isFolded)
+    }
     let view
     if (chainNodes[current]){
         view = <MainContentView tool={chainNodes[current]} onChange={onChange}/>
     }
+    let activeStyle = {
+        transform: "translateX(" + activeBox.offset +"px)",
+        width: activeBox.width + "px"
+    }
 
     return <div className="main-content">
         <div className="breadcrumb-nav">
-            <Button type="text" size={"small"} icon={<MenuFoldOutlined/>}/>
+            <Button type="text" size={"small"} onClick={onFolded}
+                    icon={isFolded? <MenuUnfoldOutlined/>:<MenuFoldOutlined/>}/>
             {breadcrumb}
+            <div className="active-bar" style={activeStyle}/>
         </div>
         <Content
             className="site-layout-background"
             style={{
-                margin: 0,
+                margin: "2px 0 0 0",
                 minHeight: 280,
             }}
         >
