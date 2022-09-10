@@ -35,15 +35,9 @@ const encodeButtons = [
             type: 1,
             value: undefined,
             do: function(val) {
-                let ret='\\u';
-                for(let i=0,len=val.length;i<len;i++){
-                    if(i<len-1){
-                        ret+=val.charCodeAt(i).toString(16)+'\\u';
-                    }else if(i===len-1){
-                        ret+=val.charCodeAt(i).toString(16);
-                    }
-                }
-                return ret;
+                return val.replace(/([\u4E00-\u9FA5]|[\uFE30-\uFFA0])/g,function(newStr){
+                    return "\\u" + newStr.charCodeAt(0).toString(16);
+                });
             }
         },
         {
@@ -62,30 +56,17 @@ const encodeButtons = [
             type: 1,
             value: undefined,
             do: (val) => {
-                const code = encodeURIComponent(val);
-                const bytes = [];
-                for (let i = 0; i < code.length; i++) {
-                    const c = code.charAt(i);
-                    if (c === '%') {
-                        const hex = code.charAt(i + 1) + code.charAt(i + 2);
-                        const hexVal = parseInt(hex, 16);
-                        bytes.push(hexVal);
-                        i += 2;
-                    } else bytes.push(c.charCodeAt(0));
-                }
-                return bytes;
+                return val.replace(/[^\u0000-\u00FF]/g, function ($0) {
+                    return escape($0).replace(/(%u)(\w { 4 })/gi, "&#x$2; ")
+                });
             }
         },
         {
             name: "解码UTF-8",
             code: "from-utf-8",
             type: 0,
-            do: (bytes) => {
-                let encoded = "";
-                for (let i = 0; i < bytes.length; i++) {
-                    encoded += '%' + bytes[i].toString(16);
-                }
-                return decodeURIComponent(encoded);
+            do: (value) => {
+                return unescape(value.replace(/&#x/g, '%u').replace(/; /g, ''));
             }
         },
         {
