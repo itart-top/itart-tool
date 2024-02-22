@@ -1,42 +1,17 @@
 import React, { useState } from 'react';
-import SideMenu from "./components/SideMenu";
-import MainContent from "./components/MainContent";
+import DecodePage from "./components/decode";
 import './App.less';
 import { Layout, Menu } from 'antd';
-const { Header, Content, Sider } = Layout;
+import Comparator from "./components/comparator";
+const { Header } = Layout;
 
-const menus = ['格式编码'].map((key) => ({
+const menus = ['格式编码', "内容比较"].map((key) => ({
     key,
     label: `${key}`,
 }));
 
 const App = () =>{
-    const [isFolded, setIsFolded] = useState(false);
-
-    const [toolChain, setToolChain] = useState([
-        {
-            name: "原始输入",
-            code: "raw-input",
-            value: undefined,
-            do: (val) => {
-                return val
-            }
-        }
-    ]);
-
-    const fire = v => {
-        const newInstance = JSON.parse(JSON.stringify(v))
-        newInstance.code += "_" + new Date().getTime()
-        newInstance.do = v.do
-        setToolChain([...toolChain, newInstance])
-    }
-    const cancel = v => {
-        setToolChain(toolChain.filter(c => c.code !== v.code))
-    }
-
-    const folded = v => {
-        setIsFolded(v)
-    }
+    const [currentMenu, setCurrentMenu] = useState("格式编码");
 
     return <Layout style={{backgroundColor: "unset"}}>
         <Header className="header" style={{ position: 'fixed', zIndex: 1, width: '100%', padding: 0 }}>
@@ -45,31 +20,13 @@ const App = () =>{
             </div>
             <Menu theme="dark" mode="horizontal"
                   style={{marginLeft: "150px"}}
-                  defaultSelectedKeys={['格式编码']} items={menus} />
+                  defaultSelectedKeys={[currentMenu]}
+                  onClick={v => setCurrentMenu(v.key)}
+                  items={menus} />
         </Header>
         <Layout style={{backgroundColor: "unset"}}>
-            <Sider width={isFolded? 0: 280}
-                   style={{
-                       overflow: 'auto',
-                       height: '100vh',
-                       position: 'fixed',
-                       left: 0,
-                       top: 64,
-                       bottom: 0,
-                   }}
-                   className="side-background"
-            >
-                <SideMenu fire={fire}/>
-            </Sider>
-            <Content
-                style={{
-                    padding: "10px",
-                    position: 'relative',
-                    marginLeft: isFolded? 0: "280px",
-                    marginTop: '64px'
-                }}>
-                <MainContent toolChain={toolChain} cancel={cancel} folded={folded}/>
-            </Content>
+            { currentMenu === "格式编码" && <DecodePage/>}
+            { currentMenu === "内容比较" && <Comparator/>}
         </Layout>
         <div className="footer" style={{position: "fixed", textAlign: "center", width: "100%", bottom: 0}}>
             <p className="cyber-security">

@@ -2,7 +2,7 @@ import React from 'react';
 import { CaretRightOutlined, LockOutlined, UnlockOutlined, PicRightOutlined } from '@ant-design/icons';
 import { Collapse, Tag, Button } from 'antd';
 import './SideMenu.less';
-import jsonToGo from "../plugin/json-to-go"
+import jsonToGo from "../../plugin/json-to-go"
 
 const { Panel } = Collapse;
 const isPlainObject = obj => Object.prototype.toString.call(obj) === '[object Object]'
@@ -158,7 +158,6 @@ const codeGenButtons = [
     },
 ]
 const SideMenu = ({fire}) =>{
-
     return <Collapse
         bordered={false}
         defaultActiveKey={['2', '3', '4']}
