@@ -21,6 +21,7 @@ const ContentView = ({tool, onChange}) => {
     if (tool.type === "json"){
         return <ReactJson src={tool.value}
                           key = {tool.code}
+                          collapsed={tool.collapsed || false}
                           theme="monokai" style={{ height: winHeight, overflow: "auto" }}/>
     }
     return view

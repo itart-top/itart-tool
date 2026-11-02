@@ -1,0 +1,20 @@
+{
+  "project": {
+    "code": "itart-tool",
+    "id": "14",
+    "name": "itart-tool"
+  },
+  "depots": [
+    {
+      "key": "itart-tool",
+      "url": "https://github.com/itart-top/itart-tool.git",
+      "id": "371561308337737728"
+    }
+  ],
+  "components": [
+    {
+      "code": "itart-tool-web",
+      "id": "19"
+    }
+  ]
+}

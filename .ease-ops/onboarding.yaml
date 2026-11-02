@@ -1,0 +1,43 @@
+version: 1
+mode: new_project
+project:
+  strategy: create
+  name: itart-tool
+  code: itart-tool
+repos:
+  - key: itart-tool
+    url: https://github.com/itart-top/itart-tool.git
+    branch: master
+    checkout_dir: itart-tool
+    origin: root
+components:
+  - code: itart-tool-web
+    name: itart-tool 前端
+    repo_refs: [itart-tool]
+    work_dir: .
+    languages: [javascript]
+    build:
+      kind: script
+      runtime: node-16
+      script: npm ci && npm run build
+      artifacts:
+        - name: build
+          required: true
+          rules:
+            - work_dir: .
+              patterns: ["build/**"]
+    deploy:
+      enabled: false
+checkout_mode: shared
+configs: []
+resources: []
+flows:
+  - env: test
+    target: new
+    name: itart-tool 测试流水线
+    action: insert
+    strategy: deploy_sequence
+acknowledge: []
+verify:
+  build: false
+  env: test

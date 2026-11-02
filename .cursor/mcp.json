@@ -1,0 +1,10 @@
+{
+  "mcpServers": {
+    "ease-ops": {
+      "url": "https://devops.itart.cn/mcp",
+      "headers": {
+        "Authorization": "Bearer eops_SHRcH4ms_0Vk2O3vNbnvRDC0erSW4NcLAXmcgHADP"
+      }
+    }
+  }
+}
